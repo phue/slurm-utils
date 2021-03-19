@@ -1,4 +1,4 @@
-#!/bin/env python2
+#!/usr/bin/env python2
 #
 # jobinfo - collect job information from slurm in nicely readable format
 #
@@ -197,7 +197,7 @@ def combine(xs):
     return r
 
 def get_values(jobid):
-    info = subprocess.Popen(['sacct', FORMAT_STR, '--parsable', '--noheader', '-j', jobid], stdout=subprocess.PIPE)
+    info = subprocess.Popen(['sacct', '-Mbiohpc_gen', FORMAT_STR, '--parsable', '--noheader', '-j', jobid], stdout=subprocess.PIPE)
     xs = []
     for line in info.stdout:
         fields = line.strip().split('|')
@@ -237,7 +237,7 @@ def main(jobid):
         if len(tmp) != 0:
             ys.append(combine(tmp))
     if "PENDING" in meta.State:
-        info = subprocess.Popen(['squeue', '--format=%E;%R', '--noheader', '-a', '-j', jobid], stdout=subprocess.PIPE)
+        info = subprocess.Popen(['squeue', '-Mbiohpc_gen', '--format=%E;%R', '--noheader', '-a', '-j', jobid], stdout=subprocess.PIPE)
         deps, reason = info.stdout.readline().strip().split(";")
         dependencies = deps
     else:

@@ -92,9 +92,9 @@ CPU_UNKNOWN = '?'
 GPU_ALLOC   = 'G'
 GPU_IDLE    = '*'
 
-PARTITION_CMD = ['scontrol', 'show', 'partition', '-a', '--oneliner']
-NODE_CMD = ['scontrol', 'show', 'node', '-a', '--oneliner']
-JOB_CMD = ['squeue', "--format=%i;%t;%u;%N;%P;%a", '--states=R', '--noheader', '-a']
+PARTITION_CMD = ['scontrol', '-Mbiohpc_gen', 'show', 'partition', '-a', '--oneliner']
+NODE_CMD = ['scontrol', '-Mbiohpc_gen', 'show', 'node', '-a', '--oneliner']
+JOB_CMD = ['squeue', '-Mbiohpc_gen', "--format=%i;%t;%u;%N;%P;%a", '--states=R', '--noheader', '-a']
 
 NODENAME_MATCHED   = "\033[7m%s\033[0m"
 NODENAME_UNMATCHED = "%s"
@@ -281,7 +281,12 @@ def main(partitions, groups, accounts, search_pattern):
             node_meta[(node,partition)] = NodeMeta(cpu_load, alloc_cores, total_cores, alloc_mem, total_mem, alloc_gpus, total_gpus, state)
         node_job_meta[node] = JobMeta(set(), set(), set(), set())
 
-    for line in stripped_lines_from_cmd(JOB_CMD):
+    stripped_lines = stripped_lines_from_cmd(JOB_CMD)
+    # On federated cluster such as biohpc_gen,
+    # the first line of the squeue output contains the clusterID
+    next(stripped_lines)
+
+    for line in stripped_lines:
         jobid,state,user,nodes,partition,account = line.split(';')
         for n in expand_hostlist(nodes):
             node_job_meta[n].job_ids.add(jobid)
