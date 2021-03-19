@@ -172,13 +172,13 @@ FIELDS = [
         Field("UserCPU",             str,        max,          show,  False, f_cpu,     "% User (Computation)"),
         Field("SystemCPU",           str,        max,          show,  False, f_cpu,     "% System (I/O)"),
         Field("ReqMem",              str,        keep_first,   show,  False, f_mem,     "Mem reserved"),
-        Field("MaxRSS",              byte_size,  max,          show,  True,  f_rss,     "Max Mem used"),
-        Field("MaxDiskWrite",        byte_size,  max,          show,  True,  f_dw,      "Max Disk Write"),
-        Field("MaxDiskRead",         byte_size,  max,          show,  True,  f_dr,      "Max Disk Read"),
+        Field("MaxRSS",              byte_size,  max,          show,  False,  f_rss,     "Max Mem used"),
+        Field("MaxDiskWrite",        byte_size,  max,          show,  False,  f_dw,      "Max Disk Write"),
+        Field("MaxDiskRead",         byte_size,  max,          show,  False,  f_dr,      "Max Disk Read"),
 
-        Field("MaxRSSNode",          str_set,    set.union,    hide,  True,  None,      ""),
-        Field("MaxDiskWriteNode",    str_set,    set.union,    hide,  True,  None,      ""),
-        Field("MaxDiskReadNode",     str_set,    set.union,    hide,  True,  None,      ""),
+        Field("MaxRSSNode",          str_set,    set.union,    hide,  False,  None,      ""),
+        Field("MaxDiskWriteNode",    str_set,    set.union,    hide,  False,  None,      ""),
+        Field("MaxDiskReadNode",     str_set,    set.union,    hide,  False,  None,      ""),
         ]
 
 FIELD_NAMES = [f.name for f in FIELDS]
@@ -231,11 +231,11 @@ def main(jobid):
     y = combine(get_values(jobid))
     meta = Meta._make(y + ['', ''])
     ys = [y]
-    if "RUNNING" in meta.State and (os.getuid() == 0 or meta.User == whoami()):
-        # get more info from sstat
-        tmp = get_sstat_values("%s,%s.batch" % (jobid, jobid))
-        if len(tmp) != 0:
-            ys.append(combine(tmp))
+    #if "RUNNING" in meta.State and (os.getuid() == 0 or meta.User == whoami()):
+    #    # get more info from sstat
+    #    tmp = get_sstat_values("%s,%s.batch" % (jobid, jobid))
+    #    if len(tmp) != 0:
+    #        ys.append(combine(tmp))
     if "PENDING" in meta.State:
         info = subprocess.Popen(['squeue', '-Mbiohpc_gen', '--format=%E;%R', '--noheader', '-a', '-j', jobid], stdout=subprocess.PIPE)
         deps, reason = info.stdout.readline().strip().split(";")
