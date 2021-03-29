@@ -6,7 +6,7 @@
 #
 # LICENSE: MIT
 """
-gnodes provdies a graphical overview of a Slurm cluster
+gnodes provides a graphical overview of a Slurm cluster
 
 Usage:
     gnodes <search terms>
