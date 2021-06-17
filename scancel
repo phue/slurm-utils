@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# this is a simple wrapper for scancel to work around a slurm bug in the current deployment (slurm 18.08.9)
+# see https://bugs.schedmd.com/show_bug.cgi?id=9036
+/usr/bin/scancel -Mbiohpc_gen "$@"
